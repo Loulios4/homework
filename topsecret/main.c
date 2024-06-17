@@ -14,10 +14,12 @@ int main()
     encrypted = vigenere_encrypt("CoMPuTeR", "Hello world!");
 
     printf("%s\n", encrypted);
+    free(encrypted);
 
     decrypted = vigenere_decrypt("CoMPuTeR", "JSXAI PSINR!");
 
     printf("%s\n", decrypted);
+    free(decrypted);
 
     unsigned char *encrypted2;
 
