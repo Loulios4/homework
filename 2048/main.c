@@ -100,6 +100,15 @@ int main()
 
         if (game_over)
         {
+            if (is_game_won(game))
+            {
+                mvprintw(SIZE * 2 + 3, 0, "You won!");
+            }
+            else if (!is_move_possible(game) || game_over)
+            {
+                mvprintw(SIZE * 2 + 3, 0, "You cant move(((");
+            }
+
             mvprintw(SIZE * 2 + 4, 0, "  ____                                              _ ");
             mvprintw(SIZE * 2 + 5, 0, " / ___| __ _ _ __ ___   ___    _____   _____ _ __  | |");
             mvprintw(SIZE * 2 + 6, 0, "| |  _ / _` | '_ ` _ \\ / _ \\  / _ \\ \\ / / _ \\ '__| | |");
@@ -126,7 +135,7 @@ int main()
             mvprintw(SIZE * 2 + 4, 0, "You won!");
             game_over = true;
         }
-        else if (!is_move_possible(game) || game_over)
+        else if (!is_move_possible(game))
         {
             mvprintw(SIZE * 2 + 4, 0, "You cant move(((");
             game_over = true;
@@ -165,6 +174,8 @@ int main()
             {
                 if (!add_random_tile(&game))
                 {
+                    update(&game, dy, dx);
+                    refresh();
                     game_over = true;
                 }
             }
