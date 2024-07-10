@@ -132,13 +132,13 @@ int main()
 
         if (is_game_won(game))
         {
-            mvprintw(SIZE * 2 + 4, 0, "You won!");
             game_over = true;
+            continue;
         }
         else if (!is_move_possible(game))
         {
-            mvprintw(SIZE * 2 + 4, 0, "You cant move(((");
             game_over = true;
+            continue;
         }
         else
         {
@@ -174,8 +174,7 @@ int main()
             {
                 if (!add_random_tile(&game))
                 {
-                    update(&game, dy, dx);
-                    refresh();
+
                     game_over = true;
                 }
             }
