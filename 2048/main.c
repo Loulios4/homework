@@ -93,8 +93,8 @@ int main()
     while (1)
     {
         clear();
-
-        mvprintw(0, 0, "Score: %d", game.score);
+        mvprintw(0, 0, "%c", ch);
+        mvprintw(1, 0, "Score: %d", game.score);
 
         draw_board(&game);
 
@@ -104,7 +104,7 @@ int main()
             {
                 mvprintw(SIZE * 2 + 3, 0, "You won!");
             }
-            else if (!is_move_possible(game) || game_over)
+            else if (!is_move_possible(game))
             {
                 mvprintw(SIZE * 2 + 3, 0, "You cant move(((");
             }
@@ -148,6 +148,7 @@ int main()
         refresh();
 
         ch = getch();
+
         int dy = 0, dx = 0;
         switch (ch)
         {
