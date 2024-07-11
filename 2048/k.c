@@ -5,7 +5,6 @@
 
 bool add_random_tile(struct game *game)
 {
-    int row, col;
     int free_cell = 0;
 
     for (int i = 0; i < SIZE; i++)
@@ -20,25 +19,27 @@ bool add_random_tile(struct game *game)
     }
 
     if (free_cell == 0)
+    {
         return false;
-
-    // find random, but empty tile
-    do
-    {
-        row = rand() % SIZE;
-        col = rand() % SIZE;
-    } while (game->board[row][col] != ' ');
-
-    // place to the random position 'A' or 'B' tile
-    if (rand() % 2 == 0)
-    {
-        game->board[row][col] = 'A';
-        return true;
     }
-    else
+
+    int target = rand() % free_cell;
+    int current = 0;
+
+    for (int i = 0; i < SIZE; i++)
     {
-        game->board[row][col] = 'B';
-        return true;
+        for (int j = 0; j < SIZE; j++)
+        {
+            if (game->board[i][j] == ' ')
+            {
+                if (current == target)
+                {
+                    game->board[i][j] = (rand() % 2 == 0) ? 'A' : 'B';
+                    return true;
+                }
+                current++;
+            }
+        }
     }
 
     return false;
@@ -90,7 +91,7 @@ bool update(struct game *game, int dy, int dx)
     {
         return 0;
     }
-
+    bool changed = false;
     // right
     if (dx == 1)
     {
@@ -107,6 +108,7 @@ bool update(struct game *game, int dy, int dx)
                     if (index != j)
                     {
                         game->board[i][j] = ' ';
+                        changed = true;
                     }
                     index--;
                 }
@@ -120,28 +122,18 @@ bool update(struct game *game, int dy, int dx)
                 }
                 else if (game->board[i][j - 1] == game->board[i][j] && game->board[i][j] != ' ')
                 {
-                    game->score = game->score + pow(2, (int)game->board[i][j] - 63);
                     game->board[i][j]++;
-                    game->board[i][j - 1] = ' ';
-                }
-            }
-
-            index = SIZE - 1;
-            for (int j = SIZE - 1; j >= 0; j--)
-            {
-
-                if (game->board[i][j] != ' ')
-                {
-                    game->board[i][index] = game->board[i][j];
-                    if (index != j)
+                    game->score += pow(2, game->board[i][j] - 'A' + 1);
+                    for (int k = j - 1; k > 0; k--)
                     {
-                        game->board[i][j] = ' ';
+                        game->board[i][k] = game->board[i][k - 1];
                     }
-                    index--;
+                    game->board[i][0] = ' ';
+                    changed = true;
                 }
             }
         }
-        return 1;
+        return changed;
     }
 
     // left
@@ -151,7 +143,7 @@ bool update(struct game *game, int dy, int dx)
         for (int i = 0; i < SIZE; i++)
         {
             int index = 0;
-            for (int j = 0; j <= SIZE - 1; j++)
+            for (int j = 0; j < SIZE; j++)
             {
                 if (game->board[i][j] != ' ')
                 {
@@ -159,12 +151,13 @@ bool update(struct game *game, int dy, int dx)
                     if (index != j)
                     {
                         game->board[i][j] = ' ';
+                        changed = true;
                     }
                     index++;
                 }
             }
 
-            for (int j = 0; j < SIZE - 2; j++)
+            for (int j = 0; j < SIZE - 1; j++)
             {
                 if (game->board[i][0] == ' ')
                 {
@@ -172,27 +165,19 @@ bool update(struct game *game, int dy, int dx)
                 }
                 else if (game->board[i][j + 1] == game->board[i][j] && game->board[i][j] != ' ')
                 {
-                    game->score = game->score + pow(2, (int)game->board[i][j] - 63);
                     game->board[i][j]++;
-                    game->board[i][j + 1] = ' ';
-                }
-            }
+                    game->score += pow(2, game->board[i][j] - 'A' + 1);
 
-            index = 0;
-            for (int j = 0; j <= SIZE - 1; j++)
-            {
-                if (game->board[i][j] != ' ')
-                {
-                    game->board[i][index] = game->board[i][j];
-                    if (index != j)
+                    for (int k = j + 1; k < SIZE - 1; k++)
                     {
-                        game->board[i][j] = ' ';
+                        game->board[i][k] = game->board[i][k + 1];
                     }
-                    index++;
+                    game->board[i][SIZE - 1] = ' ';
+                    changed = true;
                 }
             }
         }
-        return 1;
+        return changed;
     }
 
     // up
@@ -202,7 +187,7 @@ bool update(struct game *game, int dy, int dx)
         for (int j = 0; j < SIZE; j++)
         {
             int index = 0;
-            for (int i = 0; i <= SIZE - 1; i++)
+            for (int i = 0; i < SIZE; i++)
             {
                 if (game->board[i][j] != ' ')
                 {
@@ -210,12 +195,13 @@ bool update(struct game *game, int dy, int dx)
                     if (index != i)
                     {
                         game->board[i][j] = ' ';
+                        changed = true;
                     }
                     index++;
                 }
             }
 
-            for (int i = 0; i < SIZE - 2; i++)
+            for (int i = 0; i < SIZE - 1; i++)
             {
                 if (game->board[0][j] == ' ')
                 {
@@ -223,27 +209,18 @@ bool update(struct game *game, int dy, int dx)
                 }
                 else if (game->board[i + 1][j] == game->board[i][j] && game->board[i][j] != ' ')
                 {
-                    game->score = game->score + pow(2, (int)game->board[i][j] - 63);
                     game->board[i][j]++;
-                    game->board[i + 1][j] = ' ';
-                }
-            }
-
-            index = 0;
-            for (int i = 0; i <= SIZE - 1; i++)
-            {
-                if (game->board[i][j] != ' ')
-                {
-                    game->board[index][j] = game->board[i][j];
-                    if (index != i)
+                    game->score += pow(2, game->board[i][j] - 'A' + 1);
+                    for (int k = i + 1; k < SIZE - 1; k++)
                     {
-                        game->board[i][j] = ' ';
+                        game->board[k][j] = game->board[k + 1][j];
                     }
-                    index++;
+                    game->board[SIZE - 1][j] = ' ';
+                    changed = true;
                 }
             }
         }
-        return 1;
+        return changed;
     }
 
     // down
@@ -261,6 +238,7 @@ bool update(struct game *game, int dy, int dx)
                     if (index != i)
                     {
                         game->board[i][j] = ' ';
+                        changed = true;
                     }
                     index--;
                 }
@@ -274,28 +252,19 @@ bool update(struct game *game, int dy, int dx)
                 }
                 else if (game->board[i - 1][j] == game->board[i][j] && game->board[i][j] != ' ')
                 {
-                    game->score = game->score + pow(2, (int)game->board[i][j] - 63);
                     game->board[i][j]++;
-                    game->board[i - 1][j] = ' ';
-                }
-            }
-
-            index = SIZE - 1;
-            for (int i = SIZE - 1; i >= 0; i--)
-            {
-                if (game->board[i][j] != ' ')
-                {
-                    game->board[index][j] = game->board[i][j];
-                    if (index != i)
+                    game->score += pow(2, (int)game->board[i][j] - 'A' + 1);
+                    for (int k = i - 1; k > 0; k--)
                     {
-                        game->board[i][j] = ' ';
+                        game->board[k][j] = game->board[k - 1][j];
                     }
-                    index--;
+                    game->board[0][j] = ' ';
+                    changed = true;
                 }
             }
         }
-        return 1;
+        return changed;
     }
 
-    return 0;
+    return changed;
 }
